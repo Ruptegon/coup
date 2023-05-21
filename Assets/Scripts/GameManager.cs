@@ -13,7 +13,7 @@ namespace Coup
         void Start()
         {
             engine = new GameEngine();
-            engine.SetupGame(playerCount);
+            engine.SetupNewGame(playerCount);
         }
     }
 }
