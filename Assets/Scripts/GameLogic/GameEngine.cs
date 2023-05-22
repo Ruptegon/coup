@@ -43,8 +43,7 @@ namespace Coup.GameLogic
             {
                 Player player = new Player(DEFAULT_PLAYER_NAME + i);
                 player.GiveCoins(2);
-                player.GiveInfluence(_gameState.Court.TakeCard());
-                player.GiveInfluence(_gameState.Court.TakeCard());
+                player.InitInfluence(_gameState.Court.TakeCard(), _gameState.Court.TakeCard());
                 _gameState.Players.Add(player);
                 _waitingForPlayersResponse.Add(player.Id, false);
             }
@@ -98,7 +97,7 @@ namespace Coup.GameLogic
 
             Player challengedPlayer = _gameState.GetPlayerById(_currentAction.PlayerTakingActionID);
 
-            if (_currentAction.CharacterEnablingAction == null || challengedPlayer.Influence.Any(c => c.Character == _currentAction.CharacterEnablingAction))
+            if (_currentAction.CharacterEnablingAction == null || challengedPlayer.InfluencesCharacter(_currentAction.CharacterEnablingAction))
             {
                 OrderPlayerToPayInfluence(challengingPlayerId);
             }
@@ -135,7 +134,7 @@ namespace Coup.GameLogic
 
             Player challengedPlayer = _gameState.GetPlayerById(counteringPlayerId);
 
-            if (_currentAction.CharactersCounteringAction.Any(character => challengedPlayer.Influence.Any(card => card.Character == character)))
+            if (_currentAction.CharactersCounteringAction.Any(character => challengedPlayer.InfluencesCharacter(character)))
             {
                 _currentAction.WasChallengedOrCountered = false;
                 OrderPlayerToPayInfluence(challengingPlayerId);
@@ -163,8 +162,7 @@ namespace Coup.GameLogic
             _waitingForPlayersResponse[payingPlayerId] = false;
 
             Player payingPlayer = _gameState.GetPlayerById(payingPlayerId);
-            Card cardToTake = payingPlayer.FindCardById(cardId);
-            payingPlayer.TakeInfluence(cardToTake);
+            payingPlayer.RevealInfluence(cardId);
 
             CheckWinCondition();
             MoveToNextPhaseIfNotWaitingForPlayers();

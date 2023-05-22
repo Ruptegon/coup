@@ -409,7 +409,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20857ce28d14f7e4baafb38a50720aa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _characterToColor: {fileID: 11400000, guid: a7ead40f8cf223c41a004edb26bfa9ef, type: 2}
   _playerName: {fileID: 438123691688032073}
+  _influenceImage1: {fileID: 1618067457385234093}
+  _influenceImage2: {fileID: 5328455784484051805}
   _coinCount: {fileID: 4258198852078892439}
 --- !u!1 &6383326008751794213
 GameObject:

@@ -7,24 +7,26 @@ namespace Coup.GameLogic
     public class Player
     {
         public Guid Id { get => _id; }
-        public List<Card> Influence { get => _influence; }
+        public InfluenceSlot[] Influence { get => _influence; }
         public string PlayerName { get; private set; }
         public int Coins { get; private set; }
 
         private readonly Guid _id;
-        private readonly List<Card> _influence;
+        private readonly InfluenceSlot[] _influence;
 
         public Player(string playerName)
         {
             _id = Guid.NewGuid();
-            _influence = new List<Card>();
+            _influence = new InfluenceSlot[2];
+            _influence[0] = new InfluenceSlot();
+            _influence[1] = new InfluenceSlot();
             PlayerName = playerName;
             Coins = 0;
         }
 
         public bool IsInfluencingCharacter(Character character)
         {
-            return Influence.Any(c => c.Character == character);
+            return Influence.Any(i => !i.IsRevealed && i.Card.Character == character);
         }
 
         public void GiveCoins(int coinsToGive)
@@ -37,24 +39,25 @@ namespace Coup.GameLogic
             Coins -= coinsToTake;
         }
 
-        public void GiveInfluence(Card influenceToGive)
+        public void InitInfluence(Card firstInfluence, Card secondInfluence)
         {
-            Influence.Add(influenceToGive);
+            Influence[0].Card = firstInfluence;
+            Influence[1].Card = secondInfluence;
         }
 
-        public void TakeInfluence(Card influenceToTake)
+        public void RevealInfluence(Guid influenceToTake)
         {
-            Influence.Remove(influenceToTake);
+            Influence.First(i => i.Card.Id == influenceToTake).IsRevealed = true;
         }
 
         public bool IsPlayerDefeated()
         {
-            return Influence.Count <= 0;
+            return Influence.Count(i => i.IsRevealed) == 2;
         }
 
-        public Card FindCardById(Guid cardId)
+        public bool InfluencesCharacter(Character? character)
         {
-            return Influence.FirstOrDefault(c => c.Id == cardId);
+            return character == null || Influence.Any(i => i.ContainsCharacter((Character)character));
         }
     }
 }

@@ -42,7 +42,15 @@ namespace Coup
             {
                 await Task.Delay(1000);
 
-                Guid cardId = _playerController.Player.Influence[_random.Next(0, _playerController.Player.Influence.Count)].Id;
+                InfluenceSlot influence;
+                int randomIndex = _random.Next(0, 2);
+                influence = _playerController.Player.Influence[randomIndex];
+                if (influence.IsRevealed)
+                {
+                    influence = _playerController.Player.Influence[1 - randomIndex];
+                }
+
+                Guid cardId = influence.Card.Id;
                 _playerController.PayInfluence(cardId);
             }
         }
