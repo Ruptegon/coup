@@ -59,8 +59,13 @@ namespace Coup.GameLogic
                 throw new Exception("Action picked during wrong game phase.");
             }
 
-            _currentAction = action;
+            if(action.PlayerTakingActionID != _currentPlayer.Id)
+            {
+                throw new Exception("Wrong player tried to take action.");
+            }
 
+            _currentAction = action;
+            _waitingForPlayersResponse[action.PlayerTakingActionID] = false;
             OnPlayerPickedAction?.Invoke(_currentPlayer.Id, action);
 
             if (action is GeneralGameAction)
@@ -165,6 +170,9 @@ namespace Coup.GameLogic
         {
             switch (newGamePhase)
             {
+                case GamePhase.PickAction:
+                    _waitingForPlayersResponse[_currentPlayer.Id] = true;
+                    break;
                 case GamePhase.ChallengeAction:
                     WaitForPlayersResponse();
                     break;
