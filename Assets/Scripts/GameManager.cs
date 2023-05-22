@@ -1,5 +1,4 @@
 using Coup.GameLogic;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,6 +13,7 @@ namespace Coup
         public GameEngine GameEngine { get; private set; }
 
         private List<PlayerController> _playerControllers;
+        private List<AIPlayer> _aiPlayers;
 
         private void Awake()
         {
@@ -30,6 +30,7 @@ namespace Coup
         {
             GameEngine.SetupNewGame(playerCount);
             CreatePlayerControllers(playerCount);
+            CreateAIPlayers(playerCount);
         }
 
         private void CreatePlayerControllers(int playerCount)
@@ -38,6 +39,18 @@ namespace Coup
             for (int i = 0; i < playerCount; i++) 
             {
                 _playerControllers.Add(new PlayerController(GameEngine.GameState.Players[i].Id, GameEngine));
+            }
+        }
+
+        /// <summary>
+        /// Create AI for each player except the first.
+        /// </summary>
+        private void CreateAIPlayers(int playerCount)
+        {
+            _aiPlayers = new List<AIPlayer>();
+            for(int i = 1; i < playerCount; i++)
+            {
+                _aiPlayers.Add(new AIPlayer(_playerControllers[i], GameEngine));
             }
         }
     }

@@ -49,7 +49,7 @@ namespace Coup.GameLogic
 
         public bool IsPlayerDefeated()
         {
-            return Influence.Count > 0;
+            return Influence.Count <= 0;
         }
 
         public Card FindCardById(Guid cardId)

@@ -48,7 +48,7 @@ namespace Coup.UI
 
         private void RefreshScreenInfo(GameState gameState)
         {
-            Player humanPlayer = gameState.GetPlayerById(_gameManager.GetHumanPlayerController().PlayerId);
+            Player humanPlayer = _gameManager.GetHumanPlayerController().Player;
             _personalInfoPanel.UpdatePanel(humanPlayer.PlayerName, humanPlayer.Influence, humanPlayer.Coins);
             
             foreach(TargetedPanel panel in _targetedPanels)

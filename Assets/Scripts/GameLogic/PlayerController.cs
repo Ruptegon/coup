@@ -6,7 +6,7 @@ namespace Coup.GameLogic
 {
     public class PlayerController
     {
-        public Guid PlayerId { get => _playerId; }
+        public Player Player { get; private set; }
 
         private readonly Guid _playerId;
         private readonly GameEngine _engine;
@@ -15,6 +15,7 @@ namespace Coup.GameLogic
         {
             _playerId = playerId;
             _engine = engine;
+            Player = _engine.GameState.GetPlayerById(playerId);
         }
 
         public void PickPersonalAction(PersonalGameActionType gameAction)
@@ -38,6 +39,31 @@ namespace Coup.GameLogic
                     _engine.ActionPicked(new CoupGameAction(_playerId, _engine, targetId));
                     break;
             }
+        }
+
+        public void PayInfluence(Guid cardId)
+        {
+            _engine.PayInfluence(_playerId, cardId);
+        }
+
+        public void ChallengeAction()
+        {
+            _engine.ChallengeAction(_playerId);
+        }
+
+        public void ChallengeCounter()
+        {
+            _engine.ChallengeCounter(_playerId);
+        }
+
+        public void CounterAction()
+        {
+            _engine.CounterAction(_playerId);
+        }
+
+        public void SkipChallengeOrCounter()
+        {
+            _engine.SkipChallengeOrCounter(_playerId);
         }
     }
 }

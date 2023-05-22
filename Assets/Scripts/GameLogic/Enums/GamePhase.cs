@@ -9,6 +9,7 @@ namespace Coup.GameLogic.Enums
         ChallengeAction,
         Counter,
         ChallengeCounter,
-        ExecuteAction
+        ExecuteAction,
+        GameFinished
     }
 }
