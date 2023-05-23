@@ -60,11 +60,6 @@ namespace Coup.UI
                 _influenceImage2.color = Color.white;
             }
 
-            if(_influenceImage1.color.a == 0 || _influenceImage2.color.a == 0)
-            {
-                int j = 0;
-            }
-
             _coinCount.text = COIN_COUNT_TEXT + coinCount;
         }
 

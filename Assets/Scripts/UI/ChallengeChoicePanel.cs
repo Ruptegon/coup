@@ -34,8 +34,8 @@ namespace Coup.UI
         {
             HidePanel();
             _gameManager.GameEngine.OnGamePhaseChanged += GameEngine_OnGamePhaseChanged;
-            _gameManager.GameEngine.OnPlayerChallengedAction += (id) => { HidePanel(); };
-            _gameManager.GameEngine.OnPlayerChallengedCounter += (id) => { HidePanel(); };
+            _gameManager.GameEngine.OnPlayerChallengedAction += (id, b) => { HidePanel(); };
+            _gameManager.GameEngine.OnPlayerChallengedCounter += (id, b) => { HidePanel(); };
             _gameManager.GameEngine.OnPlayerDeclaredCounter += (id) => { HidePanel(); };
             _passButton.onClick.AddListener(Pass);
         }

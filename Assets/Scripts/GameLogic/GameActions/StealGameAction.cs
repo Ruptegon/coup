@@ -4,12 +4,10 @@ namespace Coup.GameLogic.GameActions
 {
     public class StealGameAction : GameAction
     {
-        private Guid _targetPlayerID;
-
         public StealGameAction(Guid playerTakingAction, GameEngine engine, Guid targetPlayer) : base(playerTakingAction, engine)
         {
             Name = "Steal";
-            _targetPlayerID = targetPlayer;
+            TargetPlayerID = targetPlayer;
             CharactersCounteringAction.Add(Character.Ambassador);
             CharactersCounteringAction.Add(Character.Captain);
             CharacterEnablingAction = Character.Captain;
@@ -20,7 +18,7 @@ namespace Coup.GameLogic.GameActions
             base.ExecuteAction();
             if (!IsChallengedOrCountered)
             {
-                Player targetPlayer = _engine.GameState.GetPlayerById(_targetPlayerID);
+                Player targetPlayer = _engine.GameState.GetPlayerById(TargetPlayerID);
                 Player playerTakingAction = _engine.GameState.GetPlayerById(PlayerTakingActionID);
                 if(targetPlayer.Coins >= 2)
                 {

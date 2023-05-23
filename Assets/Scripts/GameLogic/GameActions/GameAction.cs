@@ -7,6 +7,7 @@ namespace Coup.GameLogic.GameActions
     {
         public string Name { get; protected set; }
         public Guid PlayerTakingActionID { get => _playerTakingActionID; }
+        public Guid TargetPlayerID { get; protected set; }
         public int CoinCost { get; protected set; }
         public Character CharacterEnablingAction { get; protected set; }
         public List<Character> CharactersCounteringAction { get; protected set; }
@@ -18,6 +19,7 @@ namespace Coup.GameLogic.GameActions
         public GameAction (Guid playerTakingAction, GameEngine engine)
         {
             _playerTakingActionID = playerTakingAction;
+            TargetPlayerID = _playerTakingActionID;
             CharacterEnablingAction = Character.Null;
             CharactersCounteringAction = new List<Character>();
             IsChallengedOrCountered = false;

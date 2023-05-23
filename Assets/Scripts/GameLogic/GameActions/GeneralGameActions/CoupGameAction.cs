@@ -4,19 +4,17 @@ namespace Coup.GameLogic.GameActions.GeneralGameActions
 {
     public class CoupGameAction : GeneralGameAction
     {
-        private Guid _targetPlayerID;
-
         public CoupGameAction(Guid playerTakingAction, GameEngine gameEngine, Guid targetPlayer) : base(playerTakingAction, gameEngine)
         {
             Name = "Coup";
             CoinCost = 7;
-            _targetPlayerID = targetPlayer;
+            TargetPlayerID = targetPlayer;
         }
 
         public override void ExecuteAction()
         {
             base.ExecuteAction();
-            _engine.OrderPlayerToPayInfluence(_targetPlayerID);
+            _engine.OrderPlayerToPayInfluence(TargetPlayerID);
         }
     }
 }

@@ -2,8 +2,6 @@ using Coup.GameLogic.Enums;
 using Coup.GameLogic.GameActions;
 using Coup.GameLogic.GameActions.GeneralGameActions;
 using System;
-using System.Diagnostics;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Coup.GameLogic
 {
@@ -23,7 +21,6 @@ namespace Coup.GameLogic
 
         public void PickPersonalAction(PersonalGameActionType gameAction)
         {
-            UnityEngine.Debug.Log($"{Player.PlayerName} tries to do {gameAction}");
             switch (gameAction)
             {
                 case PersonalGameActionType.Income:
@@ -43,8 +40,6 @@ namespace Coup.GameLogic
 
         public void PickTargetedAction(TargetedGameActionType gameAction, Guid targetId)
         {
-            string targetPlayerName = _engine.GameState.GetPlayerById(targetId).PlayerName;
-            UnityEngine.Debug.Log($"{Player.PlayerName} tries to do {gameAction} to {targetPlayerName}");
             switch (gameAction)
             {
                 case TargetedGameActionType.Coup:
@@ -81,32 +76,21 @@ namespace Coup.GameLogic
 
         public void ChallengeAction()
         {
-            string currentPlayerName = _engine.CurrentPlayer.PlayerName;
-            UnityEngine.Debug.Log($"{Player.PlayerName} challenged {_engine.CurrentAction.Name} of {currentPlayerName}");
-
             _engine.ChallengeAction(_playerId);
         }
 
         public void ChallengeCounter()
         {
-            string counteringPlayerName = _engine.CounteringPlayer.PlayerName;
-            UnityEngine.Debug.Log($"{Player.PlayerName} challenged counter of {_engine.CurrentAction.Name} of {counteringPlayerName}");
-
             _engine.ChallengeCounter(_playerId);
         }
 
         public void CounterAction()
         {
-            string currentPlayerName = _engine.CurrentPlayer.PlayerName;
-            UnityEngine.Debug.Log($"{Player.PlayerName} countered {_engine.CurrentAction.Name} of {currentPlayerName}");
-
             _engine.CounterAction(_playerId);
         }
 
         public void SkipChallengeOrCounter()
         {
-            UnityEngine.Debug.Log($"{Player.PlayerName} passed");
-
             _engine.SkipChallengeOrCounter(_playerId);
         }
     }

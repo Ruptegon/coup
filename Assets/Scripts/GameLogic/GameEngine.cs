@@ -13,18 +13,19 @@ namespace Coup.GameLogic
 
         public event Action<Guid, GameAction> OnPlayerPickedAction;
         public event Action<Guid> OnPlayerDeclaredCounter;
-        public event Action<Guid> OnPlayerChallengedAction;
-        public event Action<Guid> OnPlayerChallengedCounter;
+        public event Action<Guid, bool> OnPlayerChallengedAction;
+        public event Action<Guid, bool> OnPlayerChallengedCounter;
         public event Action<Guid> OnPlayerMustPayInfluence;
         public event Action<GameState> OnGameStateUpdated;
         public event Action<GamePhase> OnGamePhaseChanged;
-        public event Action OnGameFinished;
+        public event Action<Guid> OnGameFinished;
 
         public GamePhase GamePhase { get => _gamePhase; private set { _gamePhase = value; OnGamePhaseChanged?.Invoke(value); } }
         public GameState GameState { get => _gameState; }
         public Player CurrentPlayer { get => _currentPlayer; }
         public Player CounteringPlayer { get => _gameState.GetPlayerById(_counteringPlayerId); }
         public GameAction CurrentAction { get => _currentAction; }
+        public GameLog GameLog { get; private set; }
         public bool IsChallengeInProgress { get; private set; }
 
         private GameState _gameState;
@@ -43,6 +44,7 @@ namespace Coup.GameLogic
         {
             _gameState = new GameState();
             _waitingForPlayersResponse = new Dictionary<Guid, bool>();
+            GameLog = new GameLog(this);
 
             for (int i = 0; i < playerCount; i++)
             {
@@ -100,17 +102,18 @@ namespace Coup.GameLogic
 
             IsChallengeInProgress = true;
             StopWaitingForPlayersResponse();
-            OnPlayerChallengedAction?.Invoke(challengingPlayerId);
 
             Player challengedPlayer = _gameState.GetPlayerById(_currentAction.PlayerTakingActionID);
             Guid cardGuid = Guid.Empty;
             if (_currentAction.CharacterEnablingAction == Character.Null || challengedPlayer.IsInfluencingCharacter(_currentAction.CharacterEnablingAction, out cardGuid))
             {
+                OnPlayerChallengedAction?.Invoke(challengingPlayerId, false);
                 OrderPlayerToPayInfluence(challengingPlayerId);
                 SwapShownCharacter(_currentAction.PlayerTakingActionID, cardGuid);
             }
             else
             {
+                OnPlayerChallengedAction?.Invoke(challengingPlayerId, true);
                 _currentAction.IsChallengedOrCountered = true;
                 OrderPlayerToPayInfluence(_currentAction.PlayerTakingActionID);
             }
@@ -127,8 +130,8 @@ namespace Coup.GameLogic
 
             _currentAction.IsChallengedOrCountered = true;
             this._counteringPlayerId = counteringPlayerId;
-            GamePhase = GamePhase.ChallengeCounter;
             OnPlayerDeclaredCounter?.Invoke(counteringPlayerId);
+            GamePhase = GamePhase.ChallengeCounter;
 
             MoveToNextPhaseIfNotWaitingForPlayers();
         }
@@ -143,18 +146,19 @@ namespace Coup.GameLogic
             IsChallengeInProgress = true;
             StopWaitingForPlayersResponse();
 
-            OnPlayerChallengedCounter?.Invoke(challengingPlayerId);
 
             Player challengedPlayer = _gameState.GetPlayerById(_counteringPlayerId);
 
             Guid cardGuid = Guid.Empty;
             if (_currentAction.CharactersCounteringAction.Any(character => challengedPlayer.IsInfluencingCharacter(character, out cardGuid)))
             {
+                OnPlayerChallengedCounter?.Invoke(challengingPlayerId, false);
                 OrderPlayerToPayInfluence(challengingPlayerId);
                 SwapShownCharacter(_counteringPlayerId, cardGuid);
             }
             else
             {
+                OnPlayerChallengedCounter?.Invoke(challengingPlayerId, true);
                 _currentAction.IsChallengedOrCountered = false;
                 OrderPlayerToPayInfluence(_counteringPlayerId);
             }
@@ -259,7 +263,7 @@ namespace Coup.GameLogic
             int playersLeft = _gameState.Players.Count(p => !p.IsPlayerDefeated());
             if (playersLeft == 1)
             {
-                OnGameFinished?.Invoke();
+                OnGameFinished?.Invoke(_gameState.Players.First(p => !p.IsPlayerDefeated()).Id);
                 _gamePhase = GamePhase.GameFinished;
             }
         }
