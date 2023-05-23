@@ -48,7 +48,7 @@ namespace Coup.GameLogic
 
             for (int i = 0; i < playerCount; i++)
             {
-                Player player = new Player(DEFAULT_PLAYER_NAME + i);
+                Player player = new Player(DEFAULT_PLAYER_NAME + (i + 1));
                 player.GiveCoins(2);
                 player.InitInfluence(_gameState.Court.TakeCard(), _gameState.Court.TakeCard());
                 _gameState.Players.Add(player);
