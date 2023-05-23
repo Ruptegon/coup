@@ -1,5 +1,6 @@
 # coup
 Digital adaptation of Coup card game. Made in Unity.
+
 For rules on how to play Coup check: https://www.ultraboardgames.com/coup/game-rules.php
 
 This implementation supports simultaneous turns, which means every player can declare to counter or challenge without waiting for decision of the players before him. Because of that, player sometimes has limited time to decide wheter to challenge or counter other player's actions.
