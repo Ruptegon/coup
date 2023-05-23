@@ -200,6 +200,12 @@ namespace Coup.GameLogic
 
             Player payingPlayer = _gameState.GetPlayerById(payingPlayerId);
             payingPlayer.RevealInfluence(cardId);
+
+            if (payingPlayer.IsPlayerDefeated())
+            {
+                payingPlayer.TakeCoins(payingPlayer.Coins);
+            }
+
             OnGameStateUpdated?.Invoke(_gameState);
 
             CheckWinCondition();
@@ -225,10 +231,15 @@ namespace Coup.GameLogic
                         WaitForPlayersResponse();
                         _waitingForPlayersResponse[_currentPlayer.Id] = false;
                     }
-                    else
+                    else if(!_gameState.GetPlayerById(CurrentAction.TargetPlayerID).IsPlayerDefeated())
                     {
                         StopWaitingForPlayersResponse();
                         _waitingForPlayersResponse[CurrentAction.TargetPlayerID] = true;
+                    }
+                    else
+                    {
+                        StopWaitingForPlayersResponse();
+                        MoveToNextPhaseIfNotWaitingForPlayers();
                     }
                     break;
                 case GamePhase.ChallengeCounter:
