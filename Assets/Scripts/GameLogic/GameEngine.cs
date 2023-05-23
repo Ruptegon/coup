@@ -126,6 +126,16 @@ namespace Coup.GameLogic
                 throw new Exception("Action countered during wrong game phase.");
             }
 
+            if (!CurrentAction.IsActionCounterable()) 
+            {
+                throw new Exception("Non counterable action countered");
+            }
+
+            if (CurrentAction.TargetPlayerID != CurrentAction.PlayerTakingActionID && CurrentAction.TargetPlayerID != counteringPlayerId) 
+            {
+                throw new Exception("Player attempted to counter action only target can attempt to counter");
+            }
+
             StopWaitingForPlayersResponse();
 
             _currentAction.IsChallengedOrCountered = true;

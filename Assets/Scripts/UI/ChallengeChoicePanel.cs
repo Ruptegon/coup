@@ -1,4 +1,6 @@
+using Coup.GameLogic;
 using Coup.GameLogic.Enums;
+using Coup.GameLogic.GameActions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,28 +44,37 @@ namespace Coup.UI
 
         private void GameEngine_OnGamePhaseChanged(GamePhase gamePhase)
         {
-            if (gamePhase == GamePhase.ChallengeAction && _gameManager.GameEngine.CurrentPlayer != _gameManager.GetHumanPlayerController().Player)
+            GameEngine gameEngine = _gameManager.GameEngine;
+            if (gamePhase == GamePhase.ChallengeAction && gameEngine.CurrentPlayer != _gameManager.GetHumanPlayerController().Player)
             {
                 _challengeButton.onClick.RemoveAllListeners();
                 _challengeButton.onClick.AddListener(ChallengeAction);
                 _challengeButtonText.text = CHALLENGE_TEXT;
-                _headerText.text = string.Format(HEADER_CHALLENGE, _gameManager.GameEngine.CurrentPlayer.PlayerName);
+                _headerText.text = string.Format(HEADER_CHALLENGE, gameEngine.CurrentPlayer.PlayerName);
                 ShowPanel();
             }
-            else if (gamePhase == GamePhase.ChallengeCounter && _gameManager.GameEngine.CounteringPlayer != _gameManager.GetHumanPlayerController().Player)
+            else if (gamePhase == GamePhase.ChallengeCounter && gameEngine.CounteringPlayer != _gameManager.GetHumanPlayerController().Player)
             {
                 _challengeButton.onClick.RemoveAllListeners();
                 _challengeButton.onClick.AddListener(ChallengeCounter);
                 _challengeButtonText.text = CHALLENGE_TEXT;
-                _headerText.text = string.Format(HEADER_CHALLENGE, _gameManager.GameEngine.CounteringPlayer.PlayerName);
+                _headerText.text = string.Format(HEADER_CHALLENGE, gameEngine.CounteringPlayer.PlayerName);
                 ShowPanel();
             }
-            else if (gamePhase == GamePhase.Counter && _gameManager.GameEngine.CurrentPlayer != _gameManager.GetHumanPlayerController().Player)
+            else if (gamePhase == GamePhase.Counter && gameEngine.CurrentPlayer != _gameManager.GetHumanPlayerController().Player)
             {
+                GameAction currentAction = gameEngine.CurrentAction;
+                if (currentAction.TargetPlayerID != currentAction.PlayerTakingActionID && currentAction.TargetPlayerID != _gameManager.GetHumanPlayerController().Player.Id)
+                {
+                    //Players can only counter targeted actions targeted at them.
+                    HidePanel();
+                    return;
+                }
+
                 _challengeButton.onClick.RemoveAllListeners();
                 _challengeButton.onClick.AddListener(CounterAction);
                 _challengeButtonText.text = COUNTER_TEXT;
-                _headerText.text = string.Format(HEADER_COUNTER, _gameManager.GameEngine.CurrentPlayer.PlayerName);
+                _headerText.text = string.Format(HEADER_COUNTER, gameEngine.CurrentPlayer.PlayerName);
                 ShowPanel();
 
             }

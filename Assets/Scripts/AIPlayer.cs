@@ -97,6 +97,9 @@ namespace Coup
 
                     if (_engine.CurrentPlayer == _playerController.Player) return;
 
+                    //Players can only counter targeted actions targeted at them.
+                    if (_engine.CurrentAction.TargetPlayerID != _engine.CurrentAction.PlayerTakingActionID && _engine.CurrentAction.TargetPlayerID != _playerController.Player.Id) return;
+
                     await DelayAction();
 
                     if (_engine.GamePhase != GamePhase.Counter) return;
