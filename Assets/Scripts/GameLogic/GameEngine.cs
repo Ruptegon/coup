@@ -261,7 +261,14 @@ namespace Coup.GameLogic
                     break;
 
                 case GamePhase.Counter:
-                    GamePhase = GamePhase.ChallengeCounter;
+                    if (CurrentAction.IsChallengedOrCountered) 
+                    {
+                        GamePhase = GamePhase.ChallengeCounter;
+                    }
+                    else
+                    {
+                        GamePhase = GamePhase.ExecuteAction;
+                    }
                     break;
 
                 case GamePhase.ChallengeCounter:
