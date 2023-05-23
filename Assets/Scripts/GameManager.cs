@@ -7,8 +7,7 @@ namespace Coup
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField]
-        private int _playerCount;
+        private const string PLAYER_COUNT_KEY = "playerCount";
 
         public GameEngine GameEngine { get; private set; }
 
@@ -18,7 +17,8 @@ namespace Coup
         private void Awake()
         {
             GameEngine = new GameEngine();
-            SetupNewGame(_playerCount);
+            int playerCount = PlayerPrefs.GetInt(PLAYER_COUNT_KEY, 6);
+            SetupNewGame(playerCount);
         }
 
         public PlayerController GetHumanPlayerController()
