@@ -8,6 +8,7 @@ namespace Coup.GameLogic.GameActions.GeneralGameActions
 
         public CoupGameAction(Guid playerTakingAction, GameEngine gameEngine, Guid targetPlayer) : base(playerTakingAction, gameEngine)
         {
+            Name = "Coup";
             CoinCost = 7;
             _targetPlayerID = targetPlayer;
         }

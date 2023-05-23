@@ -711,6 +711,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6278236130875512573, guid: b3ddd6ecf25bfa440a9623c2650c8fdf, type: 3}
+      propertyPath: _gameAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278236130875512573, guid: b3ddd6ecf25bfa440a9623c2650c8fdf, type: 3}
       propertyPath: _targetedPanel
       value: 
       objectReference: {fileID: 6122214764771533065}
@@ -937,6 +941,10 @@ PrefabInstance:
     - target: {fileID: 5486419217963301526, guid: b3ddd6ecf25bfa440a9623c2650c8fdf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278236130875512573, guid: b3ddd6ecf25bfa440a9623c2650c8fdf, type: 3}
+      propertyPath: _gameAction
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6278236130875512573, guid: b3ddd6ecf25bfa440a9623c2650c8fdf, type: 3}
       propertyPath: _targetedPanel

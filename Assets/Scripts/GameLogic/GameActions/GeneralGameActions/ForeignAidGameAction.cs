@@ -6,6 +6,7 @@ namespace Coup.GameLogic.GameActions.GeneralGameActions
     {
         public ForeignAidGameAction(Guid playerTakingAction, GameEngine gameEngine) : base(playerTakingAction, gameEngine)
         {
+            Name = "Foreign Aid";
             CoinCost = 0;
             CharactersCounteringAction.Add(Character.Duke);
         }
@@ -14,7 +15,7 @@ namespace Coup.GameLogic.GameActions.GeneralGameActions
         {
             base.ExecuteAction();
 
-            if (!WasChallengedOrCountered)
+            if (!IsChallengedOrCountered)
             {
                 Player player = _engine.GameState.GetPlayerById(PlayerTakingActionID);
                 player.GiveCoins(2);

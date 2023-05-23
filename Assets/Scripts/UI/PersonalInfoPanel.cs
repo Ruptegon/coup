@@ -1,5 +1,6 @@
 using Coup.GameLogic;
 using Coup.UI.Helpers;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,14 @@ namespace Coup.UI
         [SerializeField]
         private TextMeshProUGUI _coinCount;
 
+        [SerializeField]
+        private Transform _selectInfluenceInfoPanel;
+
+        private void Start()
+        {
+            _selectInfluenceInfoPanel.gameObject.SetActive(false);
+        }
+
         public void UpdatePanel(string playerName, InfluenceSlot[] influence, int coinCount)
         {
             _playerName.text = playerName;
@@ -46,6 +55,20 @@ namespace Coup.UI
             _influenceImage2.colors = new ColorBlock { normalColor = normalColor, selectedColor = normalColor, highlightedColor = revealedColor, pressedColor = revealedColor, colorMultiplier = 1 };
 
             _coinCount.text = COIN_COUNT_TEXT + coinCount;
+        }
+
+        public void EnablePayingInfluence(Action<int> payInfluenceAction)
+        {
+            _selectInfluenceInfoPanel.gameObject.SetActive(true);
+            _influenceImage1.onClick.AddListener(() => { payInfluenceAction.Invoke(0); DisablePayingInfluence(); });
+            _influenceImage2.onClick.AddListener(() => { payInfluenceAction.Invoke(1); DisablePayingInfluence(); });
+        }
+
+        private void DisablePayingInfluence() 
+        {
+            _selectInfluenceInfoPanel.gameObject.SetActive(false);
+            _influenceImage1.onClick.RemoveAllListeners();
+            _influenceImage2.onClick.RemoveAllListeners();
         }
     }
 }

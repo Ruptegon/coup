@@ -6,6 +6,7 @@ namespace Coup.GameLogic.GameActions.GeneralGameActions
     {
         public IncomeGameAction(Guid playerTakingAction, GameEngine gameEngine) : base(playerTakingAction, gameEngine)
         {
+            Name = "Income";
             CoinCost = 0;
         }
 

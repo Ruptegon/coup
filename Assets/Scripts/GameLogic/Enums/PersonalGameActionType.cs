@@ -4,5 +4,7 @@ namespace Coup.GameLogic.Enums
     {
         Income,
         ForeignAid,
+        Tax,
+        Exchange
     }
 }

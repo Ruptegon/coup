@@ -626,6 +626,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1087319528516188217, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1087319528516188217, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1087319528516188217, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1087319528516188217, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675946693405975701, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675946693405975701, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675946693405975701, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675946693405975701, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6054449799503575456, guid: 8819d21f6291ed94384e9690e43054dc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -694,6 +726,10 @@ PrefabInstance:
     - target: {fileID: 1773246919378290343, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
       propertyPath: m_Name
       value: TaxActionButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
+      propertyPath: _gameAction
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
       propertyPath: _playerActionPanel
@@ -924,6 +960,10 @@ PrefabInstance:
       value: ExchangeActionButton
       objectReference: {fileID: 0}
     - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
+      propertyPath: _gameAction
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
       propertyPath: _playerActionPanel
       value: 
       objectReference: {fileID: 2382118463587253798}
@@ -1036,6 +1076,10 @@ PrefabInstance:
     - target: {fileID: 1773246919378290343, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
       propertyPath: m_Name
       value: ForeignAidActionButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
+      propertyPath: _gameAction
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4246452745306984376, guid: 1bd56857674afb244ac492a69f2e6645, type: 3}
       propertyPath: _playerActionPanel

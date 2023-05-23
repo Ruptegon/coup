@@ -32,8 +32,9 @@ namespace Coup.UI
                 _targetedPanels.Add(targetedPanel);
             }
 
-            _gameManager.GameEngine.OnGameStateUpdated += RefreshScreenInfo;
-            RefreshScreenInfo(_gameManager.GameEngine.GameState);
+            _gameManager.GameEngine.OnPlayerMustPayInfluence += GameEngine_OnPlayerMustPayInfluence;
+            _gameManager.GameEngine.OnGameStateUpdated += GameEngine_OnGameStateUpdated;
+            GameEngine_OnGameStateUpdated(_gameManager.GameEngine.GameState);
         }
 
         public void CreateAction(PersonalGameActionType gameAction)
@@ -46,7 +47,7 @@ namespace Coup.UI
             _gameManager.GetHumanPlayerController().PickTargetedAction(gameAction, targetId);
         }
 
-        private void RefreshScreenInfo(GameState gameState)
+        private void GameEngine_OnGameStateUpdated(GameState gameState)
         {
             Player humanPlayer = _gameManager.GetHumanPlayerController().Player;
             _personalInfoPanel.UpdatePanel(humanPlayer.PlayerName, humanPlayer.Influence, humanPlayer.Coins);
@@ -56,6 +57,21 @@ namespace Coup.UI
                 Player targetPlayer = gameState.GetPlayerById(panel.TargetId);
                 panel.UpdatePanel(targetPlayer.PlayerName, targetPlayer.Influence, targetPlayer.Coins);
             }
+        }
+
+        private void GameEngine_OnPlayerMustPayInfluence(Guid playerId)
+        {
+            if(playerId == _gameManager.GetHumanPlayerController().Player.Id)
+            {
+                _personalInfoPanel.EnablePayingInfluence(PayInfluence);
+            }
+        }
+
+        private void PayInfluence(int influenceIndex)
+        {
+            PlayerController playerController = _gameManager.GetHumanPlayerController();
+            Guid cardId = playerController.Player.Influence[influenceIndex].Card.Id;
+            playerController.PayInfluence(cardId);
         }
     }
 }

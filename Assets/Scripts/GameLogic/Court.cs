@@ -14,7 +14,7 @@ namespace Coup.GameLogic
             InitCourt();
         }
 
-        public void AddCardToCourt(Card card)
+        public void ReturnCardToCourt(Card card)
         {
             cards.Add(card);
         }
@@ -36,6 +36,7 @@ namespace Coup.GameLogic
         {
             foreach(Character character in Enum.GetValues(typeof(Character)))
             {
+                if (character == Character.Null) continue;
                 for (int i = 0; i < 3; i++)
                 {
                     cards.Add(new Card(character));

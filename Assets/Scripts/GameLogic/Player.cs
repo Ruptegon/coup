@@ -24,11 +24,6 @@ namespace Coup.GameLogic
             Coins = 0;
         }
 
-        public bool IsInfluencingCharacter(Character character)
-        {
-            return Influence.Any(i => !i.IsRevealed && i.Card.Character == character);
-        }
-
         public void GiveCoins(int coinsToGive)
         {
             Coins += coinsToGive;
@@ -55,9 +50,21 @@ namespace Coup.GameLogic
             return Influence.Count(i => i.IsRevealed) == 2;
         }
 
-        public bool InfluencesCharacter(Character? character)
+        public bool IsInfluencingCharacter(Character character)
         {
-            return character == null || Influence.Any(i => i.ContainsCharacter((Character)character));
+            return IsInfluencingCharacter(character, out _);
+        }
+
+        public bool IsInfluencingCharacter(Character character, out Guid cardGuid)
+        {
+            InfluenceSlot influence = Influence.FirstOrDefault(i => !i.IsRevealed && i.ContainsCharacter(character));
+            if(influence != null)
+            {
+                cardGuid = influence.Card.Id;
+                return true;
+            }
+            cardGuid = Guid.Empty;
+            return false;
         }
     }
 }

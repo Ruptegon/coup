@@ -1,7 +1,7 @@
 using Coup.GameLogic;
 using Coup.GameLogic.Enums;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Coup
@@ -11,6 +11,9 @@ namespace Coup
         private const int CHANCE_TO_CHALLENGE_ACTION = 30;
         private const int CHANCE_TO_CHALLENGE_COUNTER = 50;
         private const int CHANCE_TO_COUNTER = 50;
+
+        private const int MIN_AI_DELAY = 3000;
+        private const int MAX_AI_DELAY = 5000;
 
         private PlayerController _playerController;
         private Random _random;
@@ -30,8 +33,6 @@ namespace Coup
         {
             if (IsPlayerDefeated()) return;
 
-            UnityEngine.Debug.Log($"OnPlayerMustPayInfluence {_playerController.Player.PlayerName}");
-
             OnPlayerMustPayInfluenceAsync(idOfPlayerThatHasToPay);
         }
 
@@ -40,7 +41,7 @@ namespace Coup
 
             if (idOfPlayerThatHasToPay == _playerController.Player.Id)
             {
-                await Task.Delay(1000);
+                await DelayAction();
 
                 InfluenceSlot influence;
                 int randomIndex = _random.Next(0, 2);
@@ -59,8 +60,6 @@ namespace Coup
         {
             if (IsPlayerDefeated()) return;
 
-            UnityEngine.Debug.Log($"OnGamePhaseChanged {phase} {_playerController.Player.PlayerName}");
-
             OnGamePhaseChangedAsync(phase);
         }
 
@@ -71,13 +70,19 @@ namespace Coup
                 case GamePhase.PickAction:
                     if (_playerController.Player.Id == _engine.CurrentPlayer.Id)
                     {
-                        await Task.Delay(1000);
+                        await DelayAction();
                         PickRandomAction();
                     }
                     break;
 
                 case GamePhase.ChallengeAction:
-                    await Task.Delay(1000);
+
+                    if (_engine.CurrentPlayer == _playerController.Player) return;
+
+                    await DelayAction();
+
+                    if (_engine.GamePhase != GamePhase.ChallengeAction || _engine.IsChallengeInProgress) return;
+
                     if (_random.Next(0, 100) < CHANCE_TO_CHALLENGE_ACTION)
                     {
                         _playerController.ChallengeAction();
@@ -89,7 +94,13 @@ namespace Coup
                     break;
 
                 case GamePhase.Counter:
-                    await Task.Delay(1000);
+
+                    if (_engine.CurrentPlayer == _playerController.Player) return;
+
+                    await DelayAction();
+
+                    if (_engine.GamePhase != GamePhase.Counter) return;
+
                     if (_random.Next(0, 100) < CHANCE_TO_COUNTER)
                     {
                         _playerController.CounterAction();
@@ -101,7 +112,13 @@ namespace Coup
                     break;
 
                 case GamePhase.ChallengeCounter:
-                    await Task.Delay(1000);
+
+                    if (_engine.CounteringPlayer == _playerController.Player) return;
+
+                    await DelayAction();
+
+                    if (_engine.GamePhase != GamePhase.ChallengeCounter || _engine.IsChallengeInProgress) return;
+
                     if (_random.Next(0, 100) < CHANCE_TO_CHALLENGE_COUNTER)
                     {
                         _playerController.ChallengeCounter();
@@ -115,6 +132,11 @@ namespace Coup
             }
         }
 
+        private async Task DelayAction()
+        {
+            await Task.Delay(_random.Next(MIN_AI_DELAY, MAX_AI_DELAY));
+        }
+
         private bool IsPlayerDefeated()
         {
             return _playerController.Player.IsPlayerDefeated();
@@ -122,7 +144,50 @@ namespace Coup
 
         private void PickRandomAction()
         {
-            _playerController.PickPersonalAction(PersonalGameActionType.Income);
+            if(_playerController.Player.Coins >= 10)
+            {
+                //Per rules, if player has 10 or more colors he has to coup
+                _playerController.PickTargetedAction(TargetedGameActionType.Coup, PickRandomTarget());
+                return;
+            }
+
+            List<PersonalGameActionType> personalActions = new List<PersonalGameActionType>();
+            foreach (PersonalGameActionType action in Enum.GetValues(typeof(PersonalGameActionType))) 
+            {
+                personalActions.Add(action);
+            }
+
+            List<TargetedGameActionType> allowedTargetedActions = new List<TargetedGameActionType>();
+            foreach(TargetedGameActionType action in Enum.GetValues(typeof(TargetedGameActionType)))
+            {
+                if (_playerController.CanAffordTargetedAction(action))
+                {
+                    allowedTargetedActions.Add(action);
+                }
+            }
+
+            int randomActionId = _random.Next(0, personalActions.Count + allowedTargetedActions.Count);
+
+            if(randomActionId >= personalActions.Count)
+            {
+                randomActionId -= personalActions.Count;
+                _playerController.PickTargetedAction(allowedTargetedActions[randomActionId], PickRandomTarget());
+            }
+            else
+            {
+                _playerController.PickPersonalAction(personalActions[randomActionId]);
+            }
+        }
+
+        private Guid PickRandomTarget()
+        {
+            Player player;
+            do
+            {
+                player = _engine.GameState.Players[_random.Next(0, _engine.GameState.Players.Count)];
+            }
+            while (player.IsPlayerDefeated() || player == _playerController.Player);
+            return player.Id;
         }
     }
 }

@@ -13,6 +13,8 @@ namespace Coup.GameLogic
 
         public event Action<Guid, GameAction> OnPlayerPickedAction;
         public event Action<Guid> OnPlayerDeclaredCounter;
+        public event Action<Guid> OnPlayerChallengedAction;
+        public event Action<Guid> OnPlayerChallengedCounter;
         public event Action<Guid> OnPlayerMustPayInfluence;
         public event Action<GameState> OnGameStateUpdated;
         public event Action<GamePhase> OnGamePhaseChanged;
@@ -21,13 +23,16 @@ namespace Coup.GameLogic
         public GamePhase GamePhase { get => _gamePhase; private set { _gamePhase = value; OnGamePhaseChanged?.Invoke(value); } }
         public GameState GameState { get => _gameState; }
         public Player CurrentPlayer { get => _currentPlayer; }
+        public Player CounteringPlayer { get => _gameState.GetPlayerById(_counteringPlayerId); }
+        public GameAction CurrentAction { get => _currentAction; }
+        public bool IsChallengeInProgress { get; private set; }
 
         private GameState _gameState;
         private GamePhase _gamePhase;
         private Player _currentPlayer;
         private GameAction _currentAction;
         private Dictionary<Guid, bool> _waitingForPlayersResponse;
-        private Guid counteringPlayerId;
+        private Guid _counteringPlayerId;
 
         public GameEngine()
         {
@@ -93,17 +98,20 @@ namespace Coup.GameLogic
                 throw new Exception("Action challenged during wrong game phase.");
             }
 
+            IsChallengeInProgress = true;
             StopWaitingForPlayersResponse();
+            OnPlayerChallengedAction?.Invoke(challengingPlayerId);
 
             Player challengedPlayer = _gameState.GetPlayerById(_currentAction.PlayerTakingActionID);
-
-            if (_currentAction.CharacterEnablingAction == null || challengedPlayer.InfluencesCharacter(_currentAction.CharacterEnablingAction))
+            Guid cardGuid = Guid.Empty;
+            if (_currentAction.CharacterEnablingAction == Character.Null || challengedPlayer.IsInfluencingCharacter(_currentAction.CharacterEnablingAction, out cardGuid))
             {
                 OrderPlayerToPayInfluence(challengingPlayerId);
+                SwapShownCharacter(_currentAction.PlayerTakingActionID, cardGuid);
             }
             else
             {
-                _currentAction.WasChallengedOrCountered = true;
+                _currentAction.IsChallengedOrCountered = true;
                 OrderPlayerToPayInfluence(_currentAction.PlayerTakingActionID);
             }
         }
@@ -117,10 +125,12 @@ namespace Coup.GameLogic
 
             StopWaitingForPlayersResponse();
 
-            _currentAction.WasChallengedOrCountered = true;
-            this.counteringPlayerId = counteringPlayerId;
+            _currentAction.IsChallengedOrCountered = true;
+            this._counteringPlayerId = counteringPlayerId;
             GamePhase = GamePhase.ChallengeCounter;
             OnPlayerDeclaredCounter?.Invoke(counteringPlayerId);
+
+            MoveToNextPhaseIfNotWaitingForPlayers();
         }
 
         public void ChallengeCounter(Guid challengingPlayerId)
@@ -130,18 +140,23 @@ namespace Coup.GameLogic
                 throw new Exception("Counter challenged during wrong game phase.");
             }
 
+            IsChallengeInProgress = true;
             StopWaitingForPlayersResponse();
 
-            Player challengedPlayer = _gameState.GetPlayerById(counteringPlayerId);
+            OnPlayerChallengedCounter?.Invoke(challengingPlayerId);
 
-            if (_currentAction.CharactersCounteringAction.Any(character => challengedPlayer.InfluencesCharacter(character)))
+            Player challengedPlayer = _gameState.GetPlayerById(_counteringPlayerId);
+
+            Guid cardGuid = Guid.Empty;
+            if (_currentAction.CharactersCounteringAction.Any(character => challengedPlayer.IsInfluencingCharacter(character, out cardGuid)))
             {
-                _currentAction.WasChallengedOrCountered = false;
                 OrderPlayerToPayInfluence(challengingPlayerId);
+                SwapShownCharacter(_counteringPlayerId, cardGuid);
             }
             else
             {
-                OrderPlayerToPayInfluence(counteringPlayerId);
+                _currentAction.IsChallengedOrCountered = false;
+                OrderPlayerToPayInfluence(_counteringPlayerId);
             }
         }
 
@@ -163,6 +178,7 @@ namespace Coup.GameLogic
 
             Player payingPlayer = _gameState.GetPlayerById(payingPlayerId);
             payingPlayer.RevealInfluence(cardId);
+            OnGameStateUpdated?.Invoke(_gameState);
 
             CheckWinCondition();
             MoveToNextPhaseIfNotWaitingForPlayers();
@@ -170,6 +186,8 @@ namespace Coup.GameLogic
 
         private void GamePhaseChanged(GamePhase newGamePhase) 
         {
+            IsChallengeInProgress = false;
+
             switch (newGamePhase)
             {
                 case GamePhase.PickAction:
@@ -177,12 +195,15 @@ namespace Coup.GameLogic
                     break;
                 case GamePhase.ChallengeAction:
                     WaitForPlayersResponse();
+                    _waitingForPlayersResponse[_currentPlayer.Id] = false;
                     break;
                 case GamePhase.Counter:
                     WaitForPlayersResponse();
+                    _waitingForPlayersResponse[_currentPlayer.Id] = false;
                     break;
                 case GamePhase.ChallengeCounter:
                     WaitForPlayersResponse();
+                    _waitingForPlayersResponse[_counteringPlayerId] = false;
                     break;
                 case GamePhase.ExecuteAction:
                     _currentAction.ExecuteAction();
@@ -192,10 +213,51 @@ namespace Coup.GameLogic
             }
         }
 
+        private void MoveToNextPhaseIfNotWaitingForPlayers() 
+        {
+            if (IsWaitingForPlayersResponse()) return;
+
+            switch (GamePhase)
+            {
+                case GamePhase.ChallengeAction:
+                    if (CurrentAction.IsChallengedOrCountered || !CurrentAction.IsActionCounterable())
+                    {
+                        GamePhase = GamePhase.ExecuteAction;
+                    }
+                    else
+                    {
+                        GamePhase = GamePhase.Counter;
+                    }
+                    break;
+
+                case GamePhase.Counter:
+                    GamePhase = GamePhase.ChallengeCounter;
+                    break;
+
+                case GamePhase.ChallengeCounter:
+                    GamePhase = GamePhase.ExecuteAction;
+                    break;
+
+                case GamePhase.ExecuteAction:
+                    _currentPlayer = GetNextPlayer(_currentPlayer);
+                    GamePhase = GamePhase.PickAction;
+                    break;
+            }
+        }
+
+        private void SwapShownCharacter(Guid playerGuid, Guid cardShown)
+        {
+            InfluenceSlot influenceSlot = _gameState.GetPlayerById(playerGuid).Influence.First(i => i.Card.Id == cardShown);
+            Card card = influenceSlot.Card;
+            _gameState.Court.ReturnCardToCourt(card);
+            _gameState.Court.Reshuffle();
+            influenceSlot.Card = _gameState.Court.TakeCard();
+        }
+
         private void CheckWinCondition()
         {
             int playersLeft = _gameState.Players.Count(p => !p.IsPlayerDefeated());
-            if(playersLeft == 1)
+            if (playersLeft == 1)
             {
                 OnGameFinished?.Invoke();
                 _gamePhase = GamePhase.GameFinished;
@@ -217,41 +279,27 @@ namespace Coup.GameLogic
             return _gameState.Players[currentPlayerIndex];
         }
 
-        private void MoveToNextPhaseIfNotWaitingForPlayers() 
-        {
-            if (IsWaitingForPlayersResponse()) return;
-
-            switch (GamePhase)
-            {
-                case GamePhase.ChallengeAction:
-                    GamePhase = GamePhase.Counter;
-                    break;
-                case GamePhase.Counter:
-                    GamePhase = GamePhase.ChallengeCounter;
-                    break;
-                case GamePhase.ChallengeCounter:
-                    GamePhase = GamePhase.ExecuteAction;
-                    break;
-                case GamePhase.ExecuteAction:
-                    _currentPlayer = GetNextPlayer(_currentPlayer);
-                    GamePhase = GamePhase.PickAction;
-                    break;
-            }
-        }
-
         private void WaitForPlayersResponse()
         {
-            foreach(var pair in _waitingForPlayersResponse)
+            var itemsToUpdate = new List<KeyValuePair<Guid, bool>>();
+            foreach (var pair in _waitingForPlayersResponse)
             {
-                _waitingForPlayersResponse[pair.Key] = !_gameState.GetPlayerById(pair.Key).IsPlayerDefeated();
+                bool updatedValue = !_gameState.GetPlayerById(pair.Key).IsPlayerDefeated();
+                itemsToUpdate.Add(new KeyValuePair<Guid, bool>(pair.Key, updatedValue));
+            }
+
+            foreach (var pair in itemsToUpdate)
+            {
+                _waitingForPlayersResponse[pair.Key] = pair.Value;
             }
         }
 
         private void StopWaitingForPlayersResponse()
         {
-            foreach (var pair in _waitingForPlayersResponse)
+            for(int i = 0; i < _waitingForPlayersResponse.Count; i++)
             {
-                _waitingForPlayersResponse[pair.Key] = false;
+                Guid key = _waitingForPlayersResponse.ElementAt(i).Key;
+                _waitingForPlayersResponse[key] = false;
             }
         }
 

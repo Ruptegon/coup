@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CharacterToColorHelper
   m_EditorClassIdentifier: 
   Colors:
-  - Character: 0
-    Color: {r: 0.019935932, g: 0.6037736, b: 0.084298186, a: 1}
   - Character: 1
-    Color: {r: 0, g: 0, b: 0, a: 1}
+    Color: {r: 0.019935932, g: 0.6037736, b: 0.084298186, a: 1}
   - Character: 2
-    Color: {r: 0.12259703, g: 0.4595489, b: 0.8962264, a: 1}
+    Color: {r: 0, g: 0, b: 0, a: 1}
   - Character: 3
-    Color: {r: 0.8980392, g: 0.15048878, b: 0.1215686, a: 1}
+    Color: {r: 0.12259703, g: 0.4595489, b: 0.8962264, a: 1}
   - Character: 4
+    Color: {r: 0.8980392, g: 0.15048878, b: 0.1215686, a: 1}
+  - Character: 5
     Color: {r: 0.7027834, g: 0.1215686, b: 0.8980392, a: 1}
