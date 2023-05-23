@@ -182,8 +182,16 @@ namespace Coup.GameLogic
 
         public void OrderPlayerToPayInfluence(Guid payingPlayerId)
         {
-            _waitingForPlayersResponse[payingPlayerId] = true;
-            OnPlayerMustPayInfluence?.Invoke(payingPlayerId);
+            Player player = _gameState.GetPlayerById(payingPlayerId);
+            if (player.IsPlayerDefeated())
+            {
+                MoveToNextPhaseIfNotWaitingForPlayers();
+            }
+            else
+            {
+                _waitingForPlayersResponse[payingPlayerId] = true;
+                OnPlayerMustPayInfluence?.Invoke(payingPlayerId);
+            }
         }
 
         public void PayInfluence(Guid payingPlayerId, Guid cardId)
