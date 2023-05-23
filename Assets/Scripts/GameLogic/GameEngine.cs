@@ -212,8 +212,16 @@ namespace Coup.GameLogic
                     _waitingForPlayersResponse[_currentPlayer.Id] = false;
                     break;
                 case GamePhase.Counter:
-                    WaitForPlayersResponse();
-                    _waitingForPlayersResponse[_currentPlayer.Id] = false;
+                    if (CurrentAction.TargetPlayerID == CurrentAction.PlayerTakingActionID) 
+                    {
+                        WaitForPlayersResponse();
+                        _waitingForPlayersResponse[_currentPlayer.Id] = false;
+                    }
+                    else
+                    {
+                        StopWaitingForPlayersResponse();
+                        _waitingForPlayersResponse[CurrentAction.TargetPlayerID] = true;
+                    }
                     break;
                 case GamePhase.ChallengeCounter:
                     WaitForPlayersResponse();
