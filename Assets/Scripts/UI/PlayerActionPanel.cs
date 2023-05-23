@@ -50,7 +50,10 @@ namespace Coup.UI
 
         public void CreateAction(TargetedGameActionType gameAction, Guid targetId)
         {
-            _gameManager.GetHumanPlayerController().PickTargetedAction(gameAction, targetId);
+            if (_gameManager.GetHumanPlayerController().CanAffordTargetedAction(gameAction))
+            {
+                _gameManager.GetHumanPlayerController().PickTargetedAction(gameAction, targetId);
+            }
         }
 
         private void GameEngine_OnGameStateUpdated(GameState gameState)
