@@ -10,10 +10,11 @@ namespace Coup.UI
 {
     public class TargetedPanel : MonoBehaviour
     {
-        private const string COIN_COUNT_TEXT = "Coins: ";
-
         [SerializeField]
         private CharacterToColorHelper _characterToColor;
+
+        [SerializeField]
+        private Image _currentPlayerBackground;
 
         [SerializeField]
         private TextMeshProUGUI _playerName;
@@ -38,7 +39,7 @@ namespace Coup.UI
             _playerActionPanel = playerActionPanel;
         }
 
-        public void UpdatePanel(string playerName, InfluenceSlot[] influence, int coinCount)
+        public void UpdatePanel(string playerName, InfluenceSlot[] influence, int coinCount, bool isCurrentPlayer)
         {
             _playerName.text = playerName;
 
@@ -60,7 +61,9 @@ namespace Coup.UI
                 _influenceImage2.color = Color.white;
             }
 
-            _coinCount.text = COIN_COUNT_TEXT + coinCount;
+            _coinCount.text = coinCount.ToString();
+
+            _currentPlayerBackground.enabled = isCurrentPlayer;
         }
 
         public void CreateAction(TargetedGameActionType gameAction)

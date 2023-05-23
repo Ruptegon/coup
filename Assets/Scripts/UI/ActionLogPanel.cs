@@ -13,6 +13,7 @@ namespace Coup.UI
 
         private void Start()
         {
+            _log.text = "";
             _gameManager.GameEngine.GameLog.OnGameLogUpdated += UpdateActionLog;
         }
 
