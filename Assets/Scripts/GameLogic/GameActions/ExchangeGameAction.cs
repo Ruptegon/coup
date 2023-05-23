@@ -21,13 +21,18 @@ namespace Coup.GameLogic.GameActions
 
                 for(int i = 0; i < player.Influence.Length; i++)
                 {
-                    _engine.GameState.Court.ReturnCardToCourt(player.Influence[i].Card);
+                    if (!player.Influence[i].IsRevealed) 
+                    {
+                        _engine.GameState.Court.ReturnCardToCourt(player.Influence[i].Card);
+                    }
                 }
                 _engine.GameState.Court.Reshuffle();
                 for(int i = 0; i < player.Influence.Length; i++)
                 {
-                    player.Influence[i].Card = _engine.GameState.Court.TakeCard();
-
+                    if (!player.Influence[i].IsRevealed)
+                    {
+                        player.Influence[i].Card = _engine.GameState.Court.TakeCard();
+                    }
                 }
             }
         }
