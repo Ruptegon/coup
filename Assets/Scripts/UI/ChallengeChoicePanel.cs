@@ -45,6 +45,12 @@ namespace Coup.UI
         private void GameEngine_OnGamePhaseChanged(GamePhase gamePhase)
         {
             GameEngine gameEngine = _gameManager.GameEngine;
+            if (_gameManager.GetHumanPlayerController().Player.IsPlayerDefeated()) 
+            {
+                HidePanel();
+                return;
+            }
+
             if (gamePhase == GamePhase.ChallengeAction && gameEngine.CurrentPlayer != _gameManager.GetHumanPlayerController().Player)
             {
                 _challengeButton.onClick.RemoveAllListeners();
