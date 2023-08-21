@@ -1,5 +1,7 @@
 # coup
-Digital adaptation of Coup card game. Made in Unity.
+Digital adaptation of Coup card game. Made in 3 days in Unity as part of recruiting project.
+Due to rushed development not everything in the code is perfect but it gives some kind of insight on how I code and think.
+As visual side of the project was not rated in the task, it did not get enough attention from me (as one can see on the screen).
 
 For rules on how to play Coup check: https://www.ultraboardgames.com/coup/game-rules.php
 
